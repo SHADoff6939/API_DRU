@@ -1,13 +1,14 @@
 from datetime import datetime as dt
 
 import sqlalchemy
+from models.base import Model
 
 from core import db
 from sqlalchemy import String, Date
 from models.relations import association
 from sqlalchemy.orm import Mapped, mapped_column
 
-class Actor(db.Model):
+class Actor(Model, db.Model):
     __tablename__ = 'actors'
 
     # id -> integer, primary key

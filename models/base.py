@@ -20,6 +20,9 @@ class Model(object):
         cls: class
         kwargs: dict with object parameters
         """
+        existing = db.session.query(cls).filter_by(**kwargs).first()
+        if existing:
+            return existing
         obj = cls(**kwargs)
         return commit(obj)
 
@@ -48,10 +51,10 @@ class Model(object):
         """
         obj = db.session.query(cls).filter_by(id=row_id).first()
         if not obj:
-            return None
+            return 0
         db.session.delete(obj)
         db.session.commit()
-        return obj
+        return 1
 
     @classmethod
     def add_relation(cls, row_id, rel_obj):
