@@ -7,6 +7,7 @@ from models.actor import Actor
 from models.movie import Movie
 from settings.constants import ACTOR_FIELDS  # to make response pretty
 from .parse_request import get_request_data
+from core import db
 
 
 def get_all_actors():
@@ -99,18 +100,40 @@ def update_actor():
     Update actor record by id
     """
     data = get_request_data()
-    ### YOUR CODE HERE ###
 
-    # use this for 200 response code
     try:
         row_id = int(data['id'])
     except (KeyError, ValueError):
         return make_response(jsonify(error="Invalid or missing 'id'"), 400)
-    data.pop('id')  # видаляємо id з data, щоб не передавати його як атрибут
-    upd_record = Actor.update(row_id, **data)
-    upd_actor = {k: v for k, v in upd_record.__dict__.items() if k in ACTOR_FIELDS}
-    return make_response(jsonify(upd_actor), 200)
-    ### END CODE HERE ###
+
+    data.pop('id')
+
+    # Перевіримо, чи існує запис з таким id
+    if not db.session.query(Actor).filter_by(id=row_id).first():
+        return make_response(jsonify(error="Actor not found"), 400)
+
+    # Перевіримо, що передані лише валідні поля
+    for key in data:
+        if key not in ACTOR_FIELDS:
+            return make_response(jsonify(error=f"Invalid field '{key}'"), 400)
+
+    # Перевіримо формат дати
+    if 'date_of_birth' in data:
+        try:
+            datetime.strptime(data['date_of_birth'], "%d.%m.%Y")
+        except ValueError:
+            return make_response(jsonify(error="Invalid date format, expected dd.mm.yyyy"), 400)
+
+    try:
+        # Використовуємо твій метод update
+        upd_record = Actor.update(row_id, **data)
+        upd_actor = {k: v for k, v in upd_record.__dict__.items() if k in ACTOR_FIELDS}
+        return make_response(jsonify(upd_actor), 200)
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return make_response(jsonify(error="Server error: " + str(e)), 500)
 
 
 def delete_actor():
