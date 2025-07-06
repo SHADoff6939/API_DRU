@@ -16,9 +16,9 @@ class Actor(Model, db.Model):
     # name -> string, size 50, unique, not nullable
     name: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     # gender -> string, size 11
-    gender: Mapped[str] = mapped_column(String(11))
+    gender: Mapped[str] = mapped_column(String(11), nullable=False)
     # date_of_birth -> date
-    date_of_birth: Mapped[dt.date] = mapped_column(Date)
+    date_of_birth: Mapped[dt.date] = mapped_column(Date, nullable=False)
 
     # Use `db.relationship` method to define the Actor's relationship with Movie.
     # Set `backref` as 'cast', uselist=True

@@ -1,6 +1,6 @@
 from flask import jsonify, make_response
 
-from datetime import datetime as dt
+from datetime import datetime
 from ast import literal_eval
 
 from models.actor import Actor
@@ -46,22 +46,52 @@ def get_actor_by_id():
         err = 'No id specified'
         return make_response(jsonify(error=err), 400)
 
+#
+# def add_actor():
+#     """
+#     Add new actor
+#     """
+#     data = get_request_data()
+#     ### YOUR CODE HERE ###
+#
+#     # use this for 200 response code
+#     try:
+#         new_record = Actor.create(**data)
+#         new_actor = {k: v for k, v in new_record.__dict__.items() if k in ACTOR_FIELDS}
+#     except (KeyError, ValueError):
+#         return make_response(jsonify(error="Invalid data"), 400)
+#     return make_response(jsonify(new_actor), 200)
+#     ### END CODE HERE ###
+
+DATE_FORMAT = "%d.%m.%Y"
+REQUIRED_FIELDS = {"name", "gender", "date_of_birth"}
+ALLOWED_FIELDS = REQUIRED_FIELDS  # актор не повинен мати інших полів
 
 def add_actor():
-    """
-    Add new actor
-    """
     data = get_request_data()
-    ### YOUR CODE HERE ###
 
-    # use this for 200 response code
+    # 1. Перевірка, що всі потрібні поля присутні
+    if not REQUIRED_FIELDS.issubset(data):
+        return make_response(jsonify({"error": "Missing required fields"}), 400)
+
+    # 2. Перевірка, що **немає зайвих полів**
+    if not set(data).issubset(ALLOWED_FIELDS):
+        return make_response(jsonify({"error": "Invalid fields present"}), 400)
+
+    # 3. Перевірка формату дати
+    try:
+        datetime.strptime(data["date_of_birth"], DATE_FORMAT)
+    except ValueError:
+        return make_response(jsonify({"error": "Invalid date format. Use dd.mm.yyyy"}), 400)
+
+    # 4. Створення запису
     try:
         new_record = Actor.create(**data)
-        new_actor = {k: v for k, v in new_record.__dict__.items() if k in ACTOR_FIELDS}
-    except (KeyError, ValueError):
-        return make_response(jsonify(error="Invalid data"), 400)
+    except AssertionError as e:
+        return make_response(jsonify({"error": str(e)}), 500)
+
+    new_actor = {k: v for k, v in new_record.__dict__.items() if k in ACTOR_FIELDS}
     return make_response(jsonify(new_actor), 200)
-    ### END CODE HERE ###
 
 
 def update_actor():
