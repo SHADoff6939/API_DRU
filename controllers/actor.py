@@ -142,7 +142,12 @@ def delete_actor():
     """
     data = get_request_data()
     ### YOUR CODE HERE ###
-    row_id = int(data['id'])
+    try:
+        row_id = int(data['id'])
+    except (KeyError, ValueError):
+        return make_response(jsonify(error="Invalid or missing 'id'"), 400)
+    if not db.session.query(Actor).filter_by(id=row_id).first():
+        return make_response(jsonify(error="Such actor shold exist"), 400)
     try:
         Actor.delete(row_id)
     except (KeyError, ValueError):
