@@ -1,8 +1,8 @@
 # Movie-Actor Filmography Management System
 
-![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
+![Python](https://img.shields.io/badge/Python-3.7-blue.svg)
 ![Flask](https://img.shields.io/badge/Flask-2.0+-green.svg)
-![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-1.4-orange.svg)
+![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0+-orange.svg)
 ![Docker](https://img.shields.io/badge/Docker-Compatible-brightgreen.svg)
 
 ## Project Description
