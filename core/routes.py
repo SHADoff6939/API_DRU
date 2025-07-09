@@ -52,7 +52,7 @@ def movie():
 @app.route('/api/actor-relations', methods=['PUT', 'DELETE'])
 def actor_relation():
     if request.method == 'PUT':
-        return actor_relation()
+        return actor_add_relation()
     elif request.method == 'DELETE':
         return actor_clear_relations()
 

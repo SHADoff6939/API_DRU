@@ -163,24 +163,36 @@ def actor_add_relation():
     Add a movie to actor's filmography
     """
     data = get_request_data()
+    ### YOUR CODE HERE ###
+    if 'id' and 'relation_id' in data.keys():
+        try:
+            actor_id = int(data['id'])
+            movie_id = int(data['relation_id'])
+        except:
+            err = 'Id must be integer'
+            return make_response(jsonify(error=err), 400)
+    else:
+        err = 'No id specified'
+        return make_response(jsonify(error=err), 400)
 
     try:
-        actor_id = int(data['actor_id'])
-        movie_id = int(data['movie_id'])
-    except (KeyError, ValueError):
-        return make_response(jsonify(error="Invalid or missing 'actor_id' or 'movie_id'"), 400)
+        movie_data = Movie.query.filter_by(id=movie_id).first()
+    except:
+        err = 'Movie ID error'
+        return make_response(jsonify(error=err), 400)
 
-    actor_obj = Actor.query.get(actor_id)
-    movie_obj = Movie.query.get(movie_id)
+    try:
+        actor = Actor.add_relation(actor_id, movie_data)  # add relation here
+    except:
+        err = 'Actor ID error'
+        return make_response(jsonify(error=err), 400)
 
-    if not actor_obj or not movie_obj:
-        return make_response(jsonify(error="Actor or Movie not found"), 404)
-
-    actor = Actor.add_relation(actor_id, movie_obj)
-
+    # use this for 200 response code
     rel_actor = {k: v for k, v in actor.__dict__.items() if k in ACTOR_FIELDS}
-    rel_actor['filmography'] = [movie.name for movie in actor.filmography]  # зручно для читання
+    rel_actor['filmography'] = str(actor.filmography)
     return make_response(jsonify(rel_actor), 200)
+
+    ### END CODE HERE ###
 
 
 
@@ -197,7 +209,7 @@ def actor_clear_relations():
 
     actor_obj = Actor.query.get(actor_id)
     if not actor_obj:
-        return make_response(jsonify(error="Actor not found"), 404)
+        return make_response(jsonify(error="Actor not found"), 400)
 
     actor = Actor.clear_relations(actor_id)
 

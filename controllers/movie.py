@@ -121,12 +121,14 @@ def movie_add_relation():
     actor_obj = Actor.query.get(actor_id)
 
     if not movie_obj or not actor_obj:
-        return make_response(jsonify(error='Movie or Actor not found'), 404)
+        return make_response(jsonify(error='Movie or Actor not found'), 400)
 
     movie = Movie.add_relation(movie_id, actor_obj)
     rel_movie = {k: v for k, v in movie.__dict__.items() if k in MOVIE_FIELDS}
     rel_movie['cast'] = [actor.name for actor in movie.cast]
-    return make_response(jsonify(rel_movie), 200)
+    response = make_response(jsonify(rel_movie), 200)
+    response.headers['Content-Type'] = 'application/json; charset=utf-8'
+    return response
 
 
 def movie_clear_relations():
@@ -138,7 +140,7 @@ def movie_clear_relations():
 
     movie_obj = Movie.query.get(movie_id)
     if not movie_obj:
-        return make_response(jsonify(error='Movie not found'), 404)
+        return make_response(jsonify(error='Movie not found'), 400)
 
     movie = Movie.clear_relations(movie_id)
     rel_movie = {k: v for k, v in movie.__dict__.items() if k in MOVIE_FIELDS}
