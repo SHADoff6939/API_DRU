@@ -10,8 +10,6 @@ def actors():
     """
  Get all actors in db
 	"""
-
-
     return get_all_actors()
 
 
@@ -20,8 +18,6 @@ def movies():
     """
  Get all movies in db
 	"""
-
-
     return get_all_movies()
 
 

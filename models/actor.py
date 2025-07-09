@@ -1,5 +1,5 @@
 from datetime import datetime as dt
-
+from typing import List  # Додайте цей імпорт
 import sqlalchemy
 from models.base import Model
 
@@ -23,7 +23,7 @@ class Actor(Model, db.Model):
     # Use `db.relationship` method to define the Actor's relationship with Movie.
     # Set `backref` as 'cast', uselist=True
     # Set `secondary` as 'association'
-    movies: Mapped[list["Movie"]] = db.relationship('Movie', backref='cast', uselist=True, secondary=association)
+    movies: Mapped[List["Movie"]] = db.relationship('Movie', backref='cast', uselist=True, secondary=association)
 
     def __repr__(self):
         return '<Actor {}>'.format(self.name)
